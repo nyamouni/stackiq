@@ -1,0 +1,29 @@
+# Navigateur & Webdriver
+selenium==4.21.0
+selenium-wire==5.1.0
+undetected-chromedriver==3.5.5
+webdriver-manager==4.0.1
+playwright==1.44.0
+
+# Parsing / PDF
+PyMuPDF==1.23.24  # pour fitz
+requests==2.31.0
+faker==25.7.0
+python-dotenv==1.0.1
+
+# Email
+mail-parser
+imapclient==2.3.1
+# smtplib  # intégré à Python 
+
+# CAPTCHA & 2Captcha
+2captcha-python==1.1.0
+
+# Optionnel pour logs ou threads
+# logging, threading, re, time, os, json sont intégrés (inutile de les mettre)
+
+# Si vous utilisez Groq API
+groq==0.4.2  # ou selon votre version
+
+# Si vous avez playwright dans le projet, installe les navigateurs aussi après install :
+# playwright install

@@ -1,0 +1,389 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>StackIQ – Candidats</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="{% static 'dashboard/css/styles.css' %}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+    <!-- TOP NAV -->
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-3" href="#">StackIQ</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+        <ul class="navbar-nav ms-auto me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- SIDEBAR & CONTENT -->
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'createlinkedin' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            Créer un compte linkedin 
+                        </a>
+                        <a class="nav-link" href="{% url 'voirlinkedin' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            Voir les comptes linkedin 
+                        </a>
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            TallentIQ
+                        </a>
+                        <a class="nav-link active" href="{% url 'view_candidates' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            vues Candidats
+                        </a>
+                        <a class="nav-link" href="{% url 'importcv' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            importer depuis CV
+                        </a>
+                        <a class="nav-link" href="{% url 'prospectiq' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            ProspectIQ
+                        </a>
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-sign-out-alt"></i></div>
+                            Log out
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    StackIQ Admin
+                </div>
+            </nav>
+        </div>
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+                        <h1>Liste des Candidats</h1>
+                        <a href="{% url 'ajouter_candidat' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter un candidat
+                        </a>
+                    </div>
+
+                    <!-- Filtres -->
+                    <div class="card mb-4 p-3">
+                    <h5>Filtres dynamiques</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                        <label for="filterSkill" class="form-label">Compétence</label>
+                        <input type="text" id="filterSkill" class="form-control" placeholder="Ex: Python">
+                        </div>
+                        <div class="col-md-4">
+                        <label for="filterBot" class="form-label">Bot</label>
+                        <input type="text" id="filterBot" class="form-control" placeholder="Ex: talentiq">
+                        </div>
+                        <div class="col-md-4">
+                        <label for="filterName" class="form-label">Nom</label>
+                        <input type="text" id="filterName" class="form-control" placeholder="Ex: Yamouni">
+                        </div>
+                        <div class="col-md-4">
+                        <label for="filterPrenom" class="form-label">Prénom</label>
+                        <input type="text" id="filterPrenom" class="form-control" placeholder="Ex: Nour-Eddine">
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                        <button class="btn btn-primary me-2" onclick="ajouterFiltre()">Ajouter filtre</button>
+                        <button class="btn btn-success me-2" onclick="enregistrerFiltre()">Enregistrer filtre</button>
+                        <button class="btn btn-outline-danger" onclick="resetFiltres()">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Filtres sélectionnés -->
+                    <div id="selectedFilters" class="mb-3"></div>
+
+                    <!-- Filtres enregistrés -->
+                    <div class="mb-3">
+                        <label>Filtres enregistrés :</label>
+                        <select id="savedFilterSelect" class="form-select mb-2" onchange="appliquerFiltreSauvegarde()">
+                        <option value="">-- Sélectionner un filtre enregistré --</option>
+                        </select>
+                        <button class="btn btn-danger mt-2" onclick="supprimerFiltreEnregistre()">Supprimer le filtre sélectionné</button>
+                    </div>
+                    </div>
+                    <!-- Tableau -->
+                    <div class="card mb-4">
+                        <div class="card-header"><i class="fas fa-table me-1"></i> Candidats</div>
+                        <div class="card-body">
+                            <table id="candidatesTable" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+                                        <th>Profil</th>
+                                        <th>Certificats</th>
+                                        <th>Compétences</th>
+                                        <th>Bot</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for c in candidats %}
+                                    <tr>
+                                        <td>{{ c.id }}</td>
+                                        <td class="nom">{{ c.nom }}</td>
+                                        <td class="prenom">{{ c.prenom }}</td>
+                                        <td>
+                                            {% if c.lien_du_profile %}
+                                                <a href="{{ c.lien_du_profile }}" target="_blank">Voir</a>
+                                            {% else %}
+                                                <span class="text-muted">Aucun lien</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ c.certificats }}</td>
+                                        <td class="competence">{{ c.competences }}</td>
+                                        <td class="bot">{{ c.le_bot_qui_a_trouve_ce_profil }}</td>
+                                        <td>
+                                            <a href="{% url 'modifier_candidat' candidat_id=c.id %}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+
+                                            <a href="{% url 'supprimer_candidat' candidat_id=c.id %}" 
+                                            class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce candidat ?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4 d-flex justify-content-between small">
+                    <div class="text-muted">© StackIQ 2025</div>
+                    <div><a href="#">Privacy Policy</a> &middot; <a href="#">Terms</a></div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        let filtresActifs = [];
+        let filtresEnregistres = JSON.parse(localStorage.getItem('filtresEnregistres') || '{}');
+        const nomInput = document.getElementById("filterName");
+        const prenomInput = document.getElementById("filterPrenom");
+
+        function filterTableAllFields() {
+            const skill = skillInput.value.toLowerCase();
+            const bot = botInput.value.toLowerCase();
+            const nom = nomInput.value.toLowerCase();
+            const prenom = prenomInput.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const skillCell = row.querySelector(".competence")?.textContent.toLowerCase();
+                const botCell = row.querySelector(".bot")?.textContent.toLowerCase();
+                const nomCell = row.querySelector(".nom")?.textContent.toLowerCase();
+                const prenomCell = row.querySelector(".prenom")?.textContent.toLowerCase();
+
+                const show = (!skill || skillCell.includes(skill)) &&
+                            (!bot || botCell.includes(bot)) &&
+                            (!nom || nomCell.includes(nom)) &&
+                            (!prenom || prenomCell.includes(prenom));
+
+                row.style.display = show ? "" : "none";
+            });
+        }
+
+        nomInput.addEventListener("input", filterTableAllFields);
+        prenomInput.addEventListener("input", filterTableAllFields);
+
+        // Charger les filtres enregistrés au démarrage
+        window.onload = function () {
+            const select = document.getElementById('savedFilterSelect');
+            for (const nom in filtresEnregistres) {
+                const opt = document.createElement('option');
+                opt.value = nom;
+                opt.textContent = nom;
+                select.appendChild(opt);
+            }
+            afficherFiltres();
+        };
+
+        function ajouterFiltre() {
+            const skill = document.getElementById('filterSkill').value.trim();
+            const bot = document.getElementById('filterBot').value.trim();
+            const nom = document.getElementById('filterName')?.value.trim();
+            const prenom = document.getElementById('filterPrenom')?.value.trim();
+
+            if (skill) filtresActifs.push({ type: 'Compétence', value: skill });
+            if (bot) filtresActifs.push({ type: 'Bot', value: bot });
+            if (nom) filtresActifs.push({ type: 'Nom', value: nom });
+            if (prenom) filtresActifs.push({ type: 'Prénom', value: prenom });
+
+            document.getElementById('filterSkill').value = '';
+            document.getElementById('filterBot').value = '';
+            if (document.getElementById('filterName')) document.getElementById('filterName').value = '';
+            if (document.getElementById('filterPrenom')) document.getElementById('filterPrenom').value = '';
+
+            afficherFiltres();
+            appliquerFiltres();
+        }
+
+        function afficherFiltres() {
+            const zone = document.getElementById('selectedFilters');
+            zone.innerHTML = '';
+            filtresActifs.forEach((f, i) => {
+                const span = document.createElement('span');
+                span.className = 'badge bg-secondary me-2 mb-2';
+                span.innerHTML = `${f.type}: ${f.value} <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Close" onclick="supprimerFiltre(${i})"></button>`;
+                zone.appendChild(span);
+            });
+        }
+
+        function supprimerFiltre(index) {
+            filtresActifs.splice(index, 1);
+            afficherFiltres();
+            appliquerFiltres();
+        }
+
+        function appliquerFiltres() {
+            const rows = document.querySelectorAll('#candidatesTable tbody tr');
+
+            const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            rows.forEach(row => {
+                let visible = true;
+
+                for (const filtre of filtresActifs) {
+                    const type = removeAccents(filtre.type.toLowerCase()); // nom, prenom, etc.
+                    const value = removeAccents(filtre.value.toLowerCase());
+                    let cellText = '';
+
+                    if (type === 'nom') {
+                        cellText = row.querySelector('.nom')?.textContent.toLowerCase();
+                    } else if (type === 'prenom') {
+                        cellText = row.querySelector('.prenom')?.textContent.toLowerCase();
+                    } else if (type === 'competence') {
+                        cellText = row.querySelector('.competence')?.textContent.toLowerCase();
+                    } else if (type === 'bot') {
+                        cellText = row.querySelector('.bot')?.textContent.toLowerCase();
+                    }
+
+                    // Normalize cellText too
+                    if (!cellText || !removeAccents(cellText).includes(value)) {
+                        visible = false;
+                        break;
+                    }
+                }
+
+                row.style.display = visible ? '' : 'none';
+            });
+        }
+
+
+
+        function enregistrerFiltre() {
+            const nom = prompt("Donner un nom à ce filtre :");
+            if (!nom) return;
+            filtresEnregistres[nom] = [...filtresActifs];
+            localStorage.setItem('filtresEnregistres', JSON.stringify(filtresEnregistres));
+
+            const select = document.getElementById('savedFilterSelect');
+            const opt = document.createElement('option');
+            opt.value = nom;
+            opt.textContent = nom;
+            select.appendChild(opt);
+            alert("Filtre enregistré !");
+        }
+
+        function appliquerFiltreSauvegarde() {
+            const nom = document.getElementById('savedFilterSelect').value;
+            if (!nom || !filtresEnregistres[nom]) return;
+
+            filtresActifs = [...filtresEnregistres[nom]];
+            afficherFiltres();
+            appliquerFiltres();
+        }
+
+        function supprimerFiltreEnregistre() {
+            const select = document.getElementById('savedFilterSelect');
+            const nom = select.value;
+            if (!nom || !filtresEnregistres[nom]) return alert("Aucun filtre sélectionné.");
+            if (!confirm(`Supprimer le filtre "${nom}" ?`)) return;
+
+            delete filtresEnregistres[nom];
+            localStorage.setItem('filtresEnregistres', JSON.stringify(filtresEnregistres));
+
+            // Supprime l'option du select
+            [...select.options].forEach(opt => {
+                if (opt.value === nom) select.removeChild(opt);
+            });
+
+            select.value = '';
+            alert("Filtre supprimé.");
+        }
+
+        function resetFiltres() {
+            filtresActifs = [];
+            afficherFiltres();
+            appliquerFiltres();
+
+            document.getElementById('filterSkill').value = '';
+            document.getElementById('filterBot').value = '';
+            if (document.getElementById('filterName')) document.getElementById('filterName').value = '';
+            if (document.getElementById('filterPrenom')) document.getElementById('filterPrenom').value = '';
+            document.getElementById('savedFilterSelect').value = '';
+        }
+        </script>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'dashboard/js/scripts.js' %}"></script>
+    <script>
+        const skillInput = document.getElementById("filterSkill");
+        const botInput = document.getElementById("filterBot");
+        const tableRows = document.querySelectorAll("#candidatesTable tbody tr");
+
+        function filterTable() {
+            const skill = skillInput.value.toLowerCase();
+            const bot = botInput.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const skillCell = row.querySelector(".competence").textContent.toLowerCase();
+                const botCell = row.querySelector(".bot").textContent.toLowerCase();
+
+                const show = (!skill || skillCell.includes(skill)) &&
+                             (!bot || botCell.includes(bot));
+                row.style.display = show ? "" : "none";
+            });
+        }
+
+        skillInput.addEventListener("input", filterTable);
+        botInput.addEventListener("input", filterTable);
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>STACKIQ</title>
+
+    <!-- CDN CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+
+    <!-- CSS local -->
+    <link href="{% static 'dashboard/css/styles.css' %}" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="#">StackIQ</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="#">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'createlinkedin' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            Créer un compte linkedin 
+                        </a>
+                        <a class="nav-link" href="{% url 'voirlinkedin' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            Voir les comptes linkedin 
+                        </a>
+                        <a class="nav-link active" href="{% url 'home' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            TallentIQ
+                        </a>
+                        <a class="nav-link" href="{% url 'view_candidates' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            vues Candidats
+                        </a>
+                        <a class="nav-link" href="{% url 'importcv' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            importer depuis CV
+                        </a>
+                        <a class="nav-link" href="{% url 'prospectiq' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            ProspectIQ
+                        </a>
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-sign-out-alt"></i></div>
+                            Log out
+                        </a>
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    StackIQ Admin
+                </div>
+            </nav>
+        </div>
+         <!-- Main Content -->
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Bienvenue dans StackIQ</h1>
+                    <div class="mb-3">
+                        <label for="selectedAccount" class="form-label">Sélectionnez un compte LinkedIn :</label>
+                        <select id="selectedAccount" class="form-select" required>
+                            <option value="">-- Choisissez un compte --</option>
+                            {% for account in linkedin_accounts %}
+                                <option value="{{ account.id }}">{{ account.email }}</option>
+                            {% empty %}
+                                <option disabled>Aucun compte disponible</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button onclick="startBot()" class="btn btn-success">Lancer le bot</button>
+                    <button onclick="arreterBot()" class="btn btn-danger">Arrêter le bot</button>
+
+                    <p class="lead">Utilisez le champ ci-dessous pour interagir avec TallentIQ.</p>
+                    <!-- Prompt Input -->
+                    <div class="mb-4">
+                        <label for="botPrompt" class="form-label">Votre recherche :</label>
+                        <div class="input-group">
+                            <input type="text" id="botPrompt" class="form-control" placeholder="Tapez votre prompt ici..." />
+                            <button class="btn btn-primary" id="sendPrompt">Envoyer</button>
+                        </div>
+                    </div>
+
+                    <!-- Zone Logs -->
+                    <div class="mb-4">
+                        <h5>Logs</h5>
+                        <div id="botLogs" class="border p-3 bg-light" style="min-height: 100px; max-height: 200px; overflow-y: auto;">
+                            <em>Aucun log pour le moment...</em>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; StackIQ 2025</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let eventSource = null;
+
+        function startBot() {
+            const accountId = document.getElementById("selectedAccount").value;
+            if (!accountId) {
+                alert("⚠️ Vous devez sélectionner un compte LinkedIn !");
+                return;
+            }
+
+            fetch('/lancer_bot/', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ account_id: accountId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "ok" || data.status === "already_running") {
+                    startLogStream();
+                } else {
+                    alert("Erreur lancement bot: " + data.message);
+                }
+            });
+        }
+
+
+        function arreterBot() {
+            fetch('/arreter_bot/', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    const logsDiv = document.getElementById('botLogs');
+                    logsDiv.innerHTML += `<div><strong>${data.message || data.status}</strong></div>`;
+                    logsDiv.scrollTop = logsDiv.scrollHeight;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function startLogStream() {
+            const logsDiv = document.getElementById('botLogs');
+            logsDiv.innerHTML = '';
+
+            const eventSource = new EventSource('/logs/');
+
+            eventSource.onmessage = function(event) {
+                const message = event.data;
+                const line = document.createElement('div');
+                line.textContent = message;
+                logsDiv.appendChild(line);
+                logsDiv.scrollTop = logsDiv.scrollHeight;
+            };
+
+            eventSource.onerror = function() {
+                const errorMsg = document.createElement('div');
+                errorMsg.innerHTML = "<strong>❌ Connexion perdue avec le bot.</strong>";
+                logsDiv.appendChild(errorMsg);
+                eventSource.close();
+            };
+        }
+
+        document.getElementById("sendPrompt").addEventListener("click", () => {
+            const prompt = document.getElementById("botPrompt").value;
+            if (!prompt.trim()) return;
+
+            fetch('/envoyer_prompt/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ prompt })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const logsDiv = document.getElementById('botLogs');
+                if (data.status === 'ok') {
+                    logsDiv.innerHTML += `<div><strong>${data.message}</strong></div>`;
+                } else {
+                    logsDiv.innerHTML += `<div style="color:red;"><strong>${data.message}</strong></div>`;
+                }
+            });
+        });
+
+    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sendPrompt').addEventListener('click', () => {
+            const input = document.getElementById('botPrompt');
+            const promptText = input.value.trim();
+            const logs = document.getElementById('botLogs');
+            const results = document.getElementById('botResults');
+
+            if (!promptText) return;
+
+            // Affiche le prompt dans les logs
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `<div><strong>[${timestamp}]</strong> Utilisateur: ${promptText}</div>`;
+            input.value = '';
+
+            // Placeholder pour la réponse du bot
+            results.innerHTML = `<p>Réponse du bot pour : <strong>${promptText}</strong></p><p><em>(Intégration à venir...)</em></p>`;
+        });
+    </script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'dashboard/js/scripts.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'dashboard/assets/demo/chart-area-demo.js' %}"></script>
+    <script src="{% static 'dashboard/assets/demo/chart-bar-demo.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+    <script src="{% static 'dashboard/js/datatables-simple-demo.js' %}"></script>
+</body>
+</html>

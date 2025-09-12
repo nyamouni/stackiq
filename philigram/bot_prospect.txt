@@ -1,0 +1,61 @@
+=== ProspectIQ démarré ===
+=== DÉBUT DE main() ===
+Initialisation du driver...
+Driver initialisé avec succès.
+ÉXECUTION DE LA FONCTION MAIN
+[13:14:18] Connecté à LinkedIn
+[13:14:18] Bot LinkedIn lancé.
+[13:14:29] État bloquant détecté : phone_number_required
+WARNING:root:Erreur détection Arkose via interaction : Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+#0 0x58ede22607da <unknown>
+#1 0x58ede1d05133 <unknown>
+#2 0x58ede1d4848f <unknown>
+#3 0x58ede1d7c7b6 <unknown>
+#4 0x58ede1d772c6 <unknown>
+#5 0x58ede1d76405 <unknown>
+#6 0x58ede1ccd1a8 <unknown>
+#7 0x58ede222572b <unknown>
+#8 0x58ede2229534 <unknown>
+#9 0x58ede220c229 <unknown>
+#10 0x58ede222a0d8 <unknown>
+#11 0x58ede21f061f <unknown>
+#12 0x58ede1ccafb2 <unknown>
+#13 0x73ec3a229d90 <unknown>
+
+WARNING:root: Erreur lors de la détection de CAPTCHA: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+#0 0x58ede22607da <unknown>
+#1 0x58ede1d05133 <unknown>
+#2 0x58ede1d4848f <unknown>
+#3 0x58ede1d7c7b6 <unknown>
+#4 0x58ede1d772c6 <unknown>
+#5 0x58ede1d76405 <unknown>
+#6 0x58ede1ccd1a8 <unknown>
+#7 0x58ede222572b <unknown>
+#8 0x58ede2229534 <unknown>
+#9 0x58ede220c229 <unknown>
+#10 0x58ede222a0d8 <unknown>
+#11 0x58ede21f061f <unknown>
+#12 0x58ede1ccafb2 <unknown>
+#13 0x73ec3a229d90 <unknown>
+
+WARNING:root:Erreur lors de la détection de la vérification d'identité : Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+#0 0x58ede22607da <unknown>
+#1 0x58ede1d05133 <unknown>
+#2 0x58ede1d4848f <unknown>
+#3 0x58ede1d7c7b6 <unknown>
+#4 0x58ede1d772c6 <unknown>
+#5 0x58ede1d76405 <unknown>
+#6 0x58ede1ccd1a8 <unknown>
+#7 0x58ede222572b <unknown>
+#8 0x58ede2229534 <unknown>
+#9 0x58ede220c229 <unknown>
+#10 0x58ede222a0d8 <unknown>
+#11 0x58ede21f061f <unknown>
+#12 0x58ede1ccafb2 <unknown>
+#13 0x73ec3a229d90 <unknown>
+
+ État de la page détecté : unknown
+❓ État inconnu détecté. Aucune action prise.
